@@ -5,9 +5,7 @@ import com.prepfortech.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -26,5 +24,10 @@ public class UserController {
             System.out.println(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
+    }
+
+    @PutMapping("/password")
+    public boolean updatePassword(@RequestParam("userId") String userId, @RequestParam("password") String newPassword) {
+        return userService.updatePassword(userId, newPassword);
     }
 }

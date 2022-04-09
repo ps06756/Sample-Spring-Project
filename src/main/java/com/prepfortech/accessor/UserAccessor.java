@@ -17,6 +17,22 @@ public class UserAccessor {
     @Autowired
     private DataSource dataSource;
 
+    public boolean updatePassword(String userId, String newPassword) {
+        String query = "update user set password = ? where userId = ?";
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, newPassword);
+            preparedStatement.setString(2, userId);
+
+            return preparedStatement.executeUpdate() == 1 ? true : false ;
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+
     public UserDTO getUserByEmail(String email) {
         UserDTO userDTO = null;
 

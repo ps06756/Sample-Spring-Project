@@ -22,4 +22,8 @@ public class UserService {
         // Write the code for generating link
         // Write the code for sending the email
     }
+
+    public boolean updatePassword(String userId, String newPassword) {
+        return userAccessor.updatePassword(userId, newPassword);
+    }
 }
