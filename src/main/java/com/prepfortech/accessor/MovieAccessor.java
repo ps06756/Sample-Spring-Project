@@ -1,5 +1,6 @@
 package com.prepfortech.accessor;
 
+import com.prepfortech.accessor.models.MovieDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,15 +18,17 @@ public class MovieAccessor {
     @Autowired
     private DataSource dataSource;
 
-    public List<String> getMovies() {
-
-        List<String> movies = new ArrayList<>();
+    public List<MovieDTO> getMovies() {
+        List<MovieDTO> movies = new ArrayList<>();
+        ResultSet rs = null;
         try(Connection connection = dataSource.getConnection()) {
-            String sql = "SELECT title from movie";
+            String sql = "SELECT title, tagline, budget from movie";
             PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
+            System.out.println("fetchSize = " + rs.getFetchSize());
             while (rs.next()) {
-                movies.add(rs.getString(1));
+                MovieDTO movieDTO = new MovieDTO(rs.getString(1), rs.getString(2));
+                movies.add(movieDTO);
             }
         }
         catch(SQLException ex) {
