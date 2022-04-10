@@ -17,4 +17,9 @@ public class MovieController {
     private List<String> getListOfMovies() {
         return movieService.getMovies();
     }
+
+    @GetMapping("/movieUrl")
+    private String getMovieUrl() {
+        return movieService.getMovieURL("WolfOfWallStreet");
+    }
 }
