@@ -1,6 +1,6 @@
 package com.prepfortech.accessor.models;
 
 public enum UserRole {
-    USER,
-    CUSTOMER
+    ROLE_USER,
+    ROLE_CUSTOMER
 }

@@ -26,7 +26,9 @@ public class RoleBasedAuthenticationManager implements AuthenticationManager {
         System.out.println("Called here again!");
         List<GrantedAuthority> allowedRoles = new ArrayList<>(authentication.getAuthorities());
         UserDTO userDTO = userService.getUserByEmail(email);
+        if (email == null || userDTO == null) {
 
+        }
         // check if any of the allowed roles match with the role in the user
         for(int i = 0; i < allowedRoles.size(); i++) {
             if (allowedRoles.get(i).equals(userDTO.getRole().toString())) {

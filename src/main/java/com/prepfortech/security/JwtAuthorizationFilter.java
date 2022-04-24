@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,10 +57,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         try {
             UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+//            authentication = (UsernamePasswordAuthenticationToken) super.getAuthenticationManager().authenticate(authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             System.out.println("Authentication = " + authentication.getName());
             chain.doFilter(req, res);
-        } catch (MalformedJwtException ex) {
+        } catch (MalformedJwtException | BadCredentialsException ex) {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
         }
@@ -68,19 +70,24 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest req) {
         String authorizationHeader = req.getHeader(HEADER_STRING);
         String token = "";
+        System.out.println("Authorization header = " + authorizationHeader);
         if (authorizationHeader != null) {
             if (authorizationHeader.startsWith(TOKEN_PREFIX)) {
                 token = authorizationHeader.replace(TOKEN_PREFIX, "");
+                System.out.println("Token = " + token);
                 Claims claims = Jwts.parser()
                         .setSigningKey(SECRET.getBytes())
                         .parseClaimsJws(token)
                         .getBody();
 
                 Date expirationDate = claims.getExpiration();
-                if (expirationDate.before(new Date(System.currentTimeMillis()))) {
+                if (expirationDate.after(new Date(System.currentTimeMillis()))) {
                     AuthDTO authDTO = authService.findByToken(claims.getAudience());
+                    System.out.println("claims.getAudience = " + claims.getAudience());
+                    System.out.println("authDTO = " + authDTO.getUserId());
                     if (authDTO != null) {
                         UserDTO userDTO = userService.getUserByEmail(claims.getSubject());
+                        System.out.println("userDTO = " + userDTO.getRole());
                         if (userDTO != null) {
                             return new UsernamePasswordAuthenticationToken(userDTO,
                                     null, Arrays.asList(new SimpleGrantedAuthority(userDTO.getRole().toString())));
