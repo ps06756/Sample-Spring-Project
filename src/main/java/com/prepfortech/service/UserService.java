@@ -26,4 +26,8 @@ public class UserService {
     public boolean updatePassword(String userId, String newPassword) {
         return userAccessor.updatePassword(userId, newPassword);
     }
+
+    public UserDTO getUserByEmail(String email) {
+        return userAccessor.getUserByEmail(email);
+    }
 }

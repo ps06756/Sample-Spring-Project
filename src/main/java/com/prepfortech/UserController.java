@@ -1,10 +1,12 @@
 package com.prepfortech;
 
 import com.prepfortech.exception.UserNotFoundException;
+import com.prepfortech.security.Roles;
 import com.prepfortech.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +15,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Secured({ Roles.Customer })
     @GetMapping("/passwordLink")
     public ResponseEntity<Boolean> sendResetPasswordLink(@RequestParam("email") String email) {
         try {
