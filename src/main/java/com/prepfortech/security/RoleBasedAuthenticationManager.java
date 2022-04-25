@@ -21,9 +21,7 @@ public class RoleBasedAuthenticationManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        System.out.println("Called here!");
         String email = (String) authentication.getPrincipal();
-        System.out.println("Called here again!");
         List<GrantedAuthority> allowedRoles = new ArrayList<>(authentication.getAuthorities());
         UserDTO userDTO = userService.getUserByEmail(email);
         if (email == null || userDTO == null) {

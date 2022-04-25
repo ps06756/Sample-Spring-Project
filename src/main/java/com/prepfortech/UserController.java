@@ -4,6 +4,7 @@ import com.prepfortech.accessor.models.UserDTO;
 import com.prepfortech.exception.UserNotFoundException;
 import com.prepfortech.security.Roles;
 import com.prepfortech.security.SecurityConstants;
+import com.prepfortech.service.AuthService;
 import com.prepfortech.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,6 +23,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthService authService;
+
     @Secured({ Roles.Customer, Roles.User })
     @GetMapping("/passwordLink")
     public ResponseEntity<Boolean> sendResetPasswordLink(@RequestParam("email") String email) {
@@ -36,6 +40,7 @@ public class UserController {
         }
     }
 
+    @Secured({ Roles.Customer, Roles.User })
     @PutMapping("/password")
     public boolean updatePassword(@RequestParam("userId") String userId, @RequestParam("password") String newPassword) {
         return userService.updatePassword(userId, newPassword);
@@ -52,8 +57,12 @@ public class UserController {
                     .setExpiration(expirationDate)
                     .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET.getBytes())
                     .compact();
-            System.out.println("token = " + token);
-            return ResponseEntity.status(HttpStatus.OK).body(token);
+            if (authService.storeToken(userDTO.getUserId(), token)) {
+                return ResponseEntity.status(HttpStatus.OK).body(token);
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to store the token!");
+            }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password!");
     }

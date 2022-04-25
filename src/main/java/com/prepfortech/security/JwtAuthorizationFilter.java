@@ -82,7 +82,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
                 Date expirationDate = claims.getExpiration();
                 if (expirationDate.after(new Date(System.currentTimeMillis()))) {
-                    AuthDTO authDTO = authService.findByToken(claims.getAudience());
+                    AuthDTO authDTO = authService.findByToken(token);
                     System.out.println("claims.getAudience = " + claims.getAudience());
                     System.out.println("authDTO = " + authDTO.getUserId());
                     if (authDTO != null) {
