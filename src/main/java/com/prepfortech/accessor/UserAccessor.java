@@ -1,6 +1,7 @@
 package com.prepfortech.accessor;
 
 import com.prepfortech.accessor.models.UserDTO;
+import com.prepfortech.accessor.models.UserRole;
 import com.prepfortech.accessor.models.UserState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,7 @@ public class UserAccessor {
     public UserDTO getUserByEmail(String email) {
         UserDTO userDTO = null;
 
-        String query = "SELECT userId, name, email, password, phoneNo, state from user where email = ?";
+        String query = "SELECT userId, name, email, password, phoneNo, state, role from user where email = ?";
         try(Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
@@ -49,6 +50,7 @@ public class UserAccessor {
                 userDTO.setPassword(resultSet.getString(4));
                 userDTO.setPhoneNo(resultSet.getString(5));
                 userDTO.setUserState(UserState.valueOf(resultSet.getString(6)));
+                userDTO.setRole(UserRole.valueOf(resultSet.getString(7)));
             }
         }
         catch(SQLException ex) {
