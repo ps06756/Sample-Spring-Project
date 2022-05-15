@@ -37,7 +37,7 @@ public class AuthService {
                     .setSubject(email)
                     .setAudience(userDTO.getRole().name())
                     .setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-                    .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET_KEY)
+                    .signWith(SignatureAlgorithm.HS512, SecurityConstants.SECRET_KEY.getBytes())
                     .compact();
             authAccessor.storeToken(userDTO.getUserId(), token);
             return token;
