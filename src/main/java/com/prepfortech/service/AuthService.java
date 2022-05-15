@@ -44,4 +44,8 @@ public class AuthService {
         }
         throw new InvalidCredentialsException("Either the email or password is incorrect!");
     }
+
+    public void logout(final String token) {
+        authAccessor.deleteAuthByToken(token);
+    }
 }

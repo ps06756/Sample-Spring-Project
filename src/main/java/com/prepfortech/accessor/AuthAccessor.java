@@ -1,5 +1,6 @@
 package com.prepfortech.accessor;
 
+import com.mysql.cj.jdbc.exceptions.ConnectionFeatureNotAvailableException;
 import com.prepfortech.accessor.model.AuthDTO;
 import com.prepfortech.exceptions.DependencyFailureException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,19 @@ public class AuthAccessor {
                 return authDTO;
             }
             return null;
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+            throw new DependencyFailureException(ex);
+        }
+    }
+
+    public void deleteAuthByToken(final String token) {
+        String query = "DELETE from auth where token = ?";
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, token);
+            pstmt.execute();
         }
         catch(SQLException ex) {
             ex.printStackTrace();
