@@ -6,6 +6,9 @@ import com.prepfortech.accessor.model.UserRole;
 import com.prepfortech.accessor.model.UserState;
 import com.prepfortech.exceptions.InvalidDataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
@@ -45,5 +48,13 @@ public class UserService {
         }
 
         userAccessor.addNewUser(email, name, password, phoneNo, UserState.ACTIVE, UserRole.ROLE_USER);
+    }
+
+    public void activateSubscription() {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+
+        userAccessor.updateUserRole(userDTO.getUserId(), UserRole.ROLE_CUSTOMER);
     }
 }

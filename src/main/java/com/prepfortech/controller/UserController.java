@@ -2,10 +2,12 @@ package com.prepfortech.controller;
 
 import com.prepfortech.controller.model.CreateUserInput;
 import com.prepfortech.exceptions.InvalidDataException;
+import com.prepfortech.security.Roles;
 import com.prepfortech.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +35,12 @@ public class UserController {
         catch(Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
+    }
+
+    @PostMapping("/user/subscription")
+    @Secured({ Roles.User })
+    public String activateSubscription() {
+        userService.activateSubscription();
+        return "Subscription activated successfully";
     }
 }

@@ -94,4 +94,18 @@ public class UserAccessor {
             throw new DependencyFailureException(ex);
         }
     }
+
+    public void updateUserRole(final String userId, final UserRole updatedRole) {
+        String query = "UPDATE user set role = ? where userId = ?";
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, updatedRole.toString());
+            pstmt.setString(2, userId);
+            pstmt.executeUpdate();
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+            throw new DependencyFailureException(ex);
+        }
+    }
 }
