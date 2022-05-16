@@ -57,4 +57,12 @@ public class UserService {
 
         userAccessor.updateUserRole(userDTO.getUserId(), UserRole.ROLE_CUSTOMER);
     }
+
+    public void deleteSubscription() {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+
+        userAccessor.updateUserRole(userDTO.getUserId(), UserRole.ROLE_USER);
+    }
 }
