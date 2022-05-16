@@ -32,10 +32,9 @@ public class WatchHistoryService {
         UserDTO userDTO = (UserDTO) authentication.getPrincipal();
 
         validator.validateProfile(profileId, userDTO.getUserId());
+        validator.validateVideoId(videoId);
+
         VideoDTO videoDTO = videoAccessor.getVideoByVideoId(videoId);
-        if (videoDTO == null) {
-            throw new InvalidVideoException("Video with videoId " + videoId + " does not exist!");
-        }
         if (watchedLength < 1 || watchedLength > videoDTO.getTotalLength()) {
             throw new InvalidDataException("Watched length of " + watchedLength + " is invalid!");
         }
@@ -48,6 +47,22 @@ public class WatchHistoryService {
         else {
             watchHistoryAccessor.updateWatchedLength(profileId, videoId, watchedLength);
         }
+    }
 
+    public int getWatchHistory(final String profileId, final String videoId) {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+
+        validator.validateProfile(profileId, userDTO.getUserId());
+        validator.validateVideoId(videoId);
+
+        WatchHistoryDTO watchHistoryDTO = watchHistoryAccessor.getWatchHistory(profileId, videoId);
+        if (watchHistoryDTO != null) {
+            return watchHistoryDTO.getWatchedLength();
+        }
+        else {
+            return 0;
+        }
     }
 }
