@@ -23,4 +23,8 @@ public class ProfileService {
         }
         profileAccessor.addNewProfile(userDTO.getUserId(), name, ProfileType.valueOf(type.name()));
     }
+
+    public void deactivateProfile(final String profileId) {
+        profileAccessor.deleteProfile(profileId);
+    }
 }

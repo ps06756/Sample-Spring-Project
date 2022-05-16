@@ -35,4 +35,17 @@ public class ProfileAccessor {
             throw new DependencyFailureException(ex);
         }
     }
+
+    public void deleteProfile(final String profileId) {
+        String query = "DELETE from profile where profileId = ?";
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, profileId);
+            pstmt.execute();
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+            throw new DependencyFailureException(ex);
+        }
+    }
 }
