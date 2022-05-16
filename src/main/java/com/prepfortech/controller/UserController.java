@@ -2,6 +2,7 @@ package com.prepfortech.controller;
 
 import com.prepfortech.controller.model.CreateUserInput;
 import com.prepfortech.controller.model.VerifyEmailInput;
+import com.prepfortech.controller.model.VerifyPhoneNoInput;
 import com.prepfortech.exceptions.InvalidDataException;
 import com.prepfortech.security.Roles;
 import com.prepfortech.service.UserService;
@@ -58,6 +59,21 @@ public class UserController {
     public ResponseEntity<String> verifyEmail(@RequestBody VerifyEmailInput emailInput) {
         try {
             userService.verifyEmail(emailInput.getOtp());
+            return ResponseEntity.status(HttpStatus.OK).body("Otp verified successfully");
+        }
+        catch(InvalidDataException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+        catch(Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/user/phoneNo")
+    @Secured({ Roles.User, Roles.Customer })
+    public ResponseEntity<String> verifyPhoneNo(@RequestBody VerifyPhoneNoInput phoneNoInput) {
+        try {
+            userService.verifyPhone(phoneNoInput.getOtp());
             return ResponseEntity.status(HttpStatus.OK).body("Otp verified successfully");
         }
         catch(InvalidDataException ex) {

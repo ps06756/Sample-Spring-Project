@@ -83,4 +83,20 @@ public class UserService {
             }
         }
     }
+
+    public void verifyPhone(final String otp) {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        if (userDTO.getPhoneVerificationStatus().equals(PhoneVerificationStatus.UNVERIFIED)) {
+            OtpDTO otpDTO = otpAccessor.getUnsedOtp(userDTO.getUserId(), otp, OtpSentTo.PHONE);
+            if (otpDTO != null) {
+                userAccessor.updatePhoneVerificationStatus(userDTO.getUserId(), PhoneVerificationStatus.VERIFIED);
+                otpAccessor.updateOtpState(otpDTO.getOtpId(), OtpState.USED);
+            }
+            else {
+                throw new InvalidDataException("Otp does not exist!");
+            }
+        }
+    }
 }

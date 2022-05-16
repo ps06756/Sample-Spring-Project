@@ -14,4 +14,5 @@ public class UserDTO {
     private UserState state;
     private UserRole role;
     private EmailVerificationStatus emailVerificationStatus;
+    private PhoneVerificationStatus phoneVerificationStatus;
 }
