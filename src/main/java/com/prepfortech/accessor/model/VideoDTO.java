@@ -7,11 +7,12 @@ import java.sql.Date;
 
 @Builder
 @Getter
-public class WatchHistoryDTO {
-    private String profileId;
+public class VideoDTO {
     private String videoId;
+    private String name;
+    private String seriesId;
+    private String showId;
     private double rating;
-    private int watchedLength;
-    private Date lastWatchedAt;
-    private Date firstWatchedAt;
+    private Date releaseDate;
+    private int totalLength;
 }
