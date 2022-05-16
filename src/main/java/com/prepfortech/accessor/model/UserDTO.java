@@ -13,4 +13,5 @@ public class UserDTO {
     private String phoneNo;
     private UserState state;
     private UserRole role;
+    private EmailVerificationStatus emailVerificationStatus;
 }

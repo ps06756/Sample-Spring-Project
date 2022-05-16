@@ -1,9 +1,8 @@
 package com.prepfortech.service;
 
+import com.prepfortech.accessor.OtpAccessor;
 import com.prepfortech.accessor.UserAccessor;
-import com.prepfortech.accessor.model.UserDTO;
-import com.prepfortech.accessor.model.UserRole;
-import com.prepfortech.accessor.model.UserState;
+import com.prepfortech.accessor.model.*;
 import com.prepfortech.exceptions.InvalidDataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +17,9 @@ public class UserService {
 
     @Autowired
     private UserAccessor userAccessor;
+
+    @Autowired
+    private OtpAccessor otpAccessor;
 
     public void addNewUser(final String email, final String name, final String password, final String phoneNo) {
         if (phoneNo.length() != 10) {
@@ -64,5 +66,21 @@ public class UserService {
         UserDTO userDTO = (UserDTO) authentication.getPrincipal();
 
         userAccessor.updateUserRole(userDTO.getUserId(), UserRole.ROLE_USER);
+    }
+
+    public void verifyEmail(final String otp) {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        if (userDTO.getEmailVerificationStatus().equals(EmailVerificationStatus.UNVERIFIED)) {
+            OtpDTO otpDTO = otpAccessor.getUnsedOtp(userDTO.getUserId(), otp, OtpSentTo.EMAIL);
+            if (otpDTO != null) {
+                userAccessor.updateEmailVerificationStatus(userDTO.getUserId(), EmailVerificationStatus.VERIFIED);
+                otpAccessor.updateOtpState(otpDTO.getOtpId(), OtpState.USED);
+            }
+            else {
+                throw new InvalidDataException("Otp does not exist!");
+            }
+        }
     }
 }

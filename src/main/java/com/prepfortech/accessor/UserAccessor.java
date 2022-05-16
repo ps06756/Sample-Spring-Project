@@ -1,5 +1,6 @@
 package com.prepfortech.accessor;
 
+import com.prepfortech.accessor.model.EmailVerificationStatus;
 import com.prepfortech.accessor.model.UserDTO;
 import com.prepfortech.accessor.model.UserRole;
 import com.prepfortech.accessor.model.UserState;
@@ -21,7 +22,7 @@ public class UserAccessor {
 
     /** Gets the user based on his email, if user exists returns its UserDTO object else returns null */
     public UserDTO getUserByEmail(final String email) {
-        String query = "SELECT userId, name, email, password, phoneNo, state, role from user where email = ?";
+        String query = "SELECT userId, name, email, password, phoneNo, state, role, emailVerificationStatus from user where email = ?";
         try(Connection connection = dataSource.getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(query);
             pstmt.setString(1, email);
@@ -36,6 +37,7 @@ public class UserAccessor {
                         .phoneNo(resultSet.getString(5))
                         .state(UserState.valueOf(resultSet.getString(6)))
                         .role(UserRole.valueOf(resultSet.getString(7)))
+                        .emailVerificationStatus(EmailVerificationStatus.valueOf(resultSet.getString(8)))
                         .build();
                 return userDTO;
             }
@@ -100,6 +102,20 @@ public class UserAccessor {
         try(Connection connection = dataSource.getConnection()) {
             PreparedStatement pstmt = connection.prepareStatement(query);
             pstmt.setString(1, updatedRole.toString());
+            pstmt.setString(2, userId);
+            pstmt.executeUpdate();
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+            throw new DependencyFailureException(ex);
+        }
+    }
+
+    public void updateEmailVerificationStatus(final String userId, final EmailVerificationStatus newStatus) {
+        String query = "UPDATE user set emailVerificationStatus = ? where userId = ?";
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, newStatus.toString());
             pstmt.setString(2, userId);
             pstmt.executeUpdate();
         }
