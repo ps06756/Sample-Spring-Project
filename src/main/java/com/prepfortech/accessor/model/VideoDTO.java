@@ -15,4 +15,5 @@ public class VideoDTO {
     private double rating;
     private Date releaseDate;
     private int totalLength;
+    private String videoPath;
 }
