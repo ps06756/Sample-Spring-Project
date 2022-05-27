@@ -25,4 +25,14 @@ public class VideoService {
 
         return s3Accessor.getPreSignedUrl(videoPath, videoDTO.getTotalLength()*60);
     }
+
+    public String getVideoThumbnail(final String videoId) {
+        VideoDTO videoDTO = videoAccessor.getVideoByVideoId(videoId);
+        if (videoDTO == null) {
+            throw new InvalidVideoException("Video with videoId " + videoId + " does not exist!");
+        }
+
+        String thumbnailPath = videoDTO.getThumbnailPath();
+        return s3Accessor.getPreSignedUrl(thumbnailPath, 2*60);
+    }
 }

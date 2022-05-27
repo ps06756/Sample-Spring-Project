@@ -16,4 +16,5 @@ public class VideoDTO {
     private Date releaseDate;
     private int totalLength;
     private String videoPath;
+    private String thumbnailPath;
 }
