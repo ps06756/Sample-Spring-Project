@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.UUID;
 
 @Repository
 public class OtpAccessor {
@@ -56,6 +54,24 @@ public class OtpAccessor {
             pstmt.setString(1, otpState.toString());
             pstmt.setString(2, otpId);
             pstmt.executeUpdate();
+        }
+        catch(SQLException ex) {
+            ex.printStackTrace();
+            throw new DependencyFailureException(ex);
+        }
+    }
+
+    public void addNewOtp(final String userId, final String otp, final OtpSentTo sentTo) {
+        String query = "insert into otp values (?, ?, ?, ?, ?, ?)";
+        try(Connection connection = dataSource.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setString(1, UUID.randomUUID().toString());
+            pstmt.setString(2, userId);
+            pstmt.setString(3, otp);
+            pstmt.setString(4, OtpState.UNUSED.name());
+            pstmt.setDate(5, new Date(System.currentTimeMillis()));
+            pstmt.setString(6, sentTo.name());
+            pstmt.execute();
         }
         catch(SQLException ex) {
             ex.printStackTrace();

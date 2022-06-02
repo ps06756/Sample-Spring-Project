@@ -1,5 +1,6 @@
 package com.prepfortech.service;
 
+import com.prepfortech.accessor.EmailAccessor;
 import com.prepfortech.accessor.OtpAccessor;
 import com.prepfortech.accessor.UserAccessor;
 import com.prepfortech.accessor.model.*;
@@ -20,6 +21,9 @@ public class UserService {
 
     @Autowired
     private OtpAccessor otpAccessor;
+
+    @Autowired
+    private EmailAccessor emailAccessor;
 
     public void addNewUser(final String email, final String name, final String password, final String phoneNo) {
         if (phoneNo.length() != 10) {
@@ -83,6 +87,16 @@ public class UserService {
             }
         }
     }
+    public void sendEmailOtp() {
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+        UserDTO userDTO = (UserDTO) authentication.getPrincipal();
+        String otp = generateOtp();
+
+        otpAccessor.addNewOtp(userDTO.getUserId(), otp, OtpSentTo.EMAIL);
+        emailAccessor.sendEmail(userDTO.getName(), userDTO.getEmail(), "OTP for email verification",
+                "Your OTP for verifying the email is " + otp);
+    }
 
     public void verifyPhone(final String otp) {
         Authentication authentication = SecurityContextHolder.getContext()
@@ -98,5 +112,13 @@ public class UserService {
                 throw new InvalidDataException("Otp does not exist!");
             }
         }
+    }
+
+    private String generateOtp() {
+        int min = 100000;
+        int max = 999999;
+
+        int otp = (int)(Math.random()*(max - min + 1) + min);
+        return Integer.toString(otp);
     }
 }
